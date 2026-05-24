@@ -71,16 +71,16 @@ namespace CybersecurityAwarenessBot_SA
             {
                 ["greeting"] = new List<string>
                 {
-                    "Hello! How can I help you stay safe online today?",
-                    "Hi there! Ready to learn about cybersecurity?",
-                    "Welcome! What would you like to know about online safety?"
+                    "Hello! Click any topic button above to learn about cybersecurity!",
+                    "Hi there! Ready to learn? Just click a button above!",
+                    "Welcome! Choose a topic from the buttons above to get started!"
                 },
 
                 ["name_response"] = new List<string>
                 {
-                    "Nice to meet you, {0}! 👋 What would you like to learn about today?",
-                    "Thanks, {0}! I'll remember your name. What can I help you with?",
-                    "Great to meet you, {0}! Ask me about passwords, WhatsApp verification, or 2FA!"
+                    "Nice to meet you, {0}! 👋 Click any button above to learn about cybersecurity!",
+                    "Thanks, {0}! I'll remember your name. Click the buttons above to get started!",
+                    "Great to meet you, {0}! Click on Passwords, WhatsApp, or any topic button above!"
                 },
 
                 ["password"] = new List<string>
@@ -248,7 +248,7 @@ namespace CybersecurityAwarenessBot_SA
                 return;
             }
 
-            // Check for menu
+            // Check for menu - but since you have buttons, this is optional
             if (lowerInput == "menu" || lowerInput == "help" || lowerInput == "topics" || lowerInput == "what can you do")
             {
                 ShowMenu();
@@ -268,7 +268,7 @@ namespace CybersecurityAwarenessBot_SA
                 }
                 else
                 {
-                    OnResponseGenerated?.Invoke("I'm not sure which topic you want more about. Try asking about 'passwords', 'whatsapp', or '2fa' first!");
+                    OnResponseGenerated?.Invoke("Click any topic button above (Passwords, WhatsApp, 2FA, etc.) then ask 'tell me more' for additional tips!");
                     return;
                 }
             }
@@ -392,30 +392,30 @@ namespace CybersecurityAwarenessBot_SA
             }
             else
             {
-                // Default responses - no mention of clicking buttons
+                // Default responses - no mention of typing menu since buttons exist
                 string[] defaultResponses = {
-                    "I'm not sure what you're asking. Try asking about 'passwords', 'whatsapp', or '2fa'!",
-                    "Not sure what you mean. Try 'How do I enable WhatsApp verification?' or 'What is 2FA?'",
-                    "I didn't quite catch that. Ask for a 'random tip' or ask about specific topics like passwords or WhatsApp!"
+                    "Click any topic button above - Passwords, WhatsApp, 2FA, or others - to learn about cybersecurity!",
+                    "Not sure what you mean. Try clicking one of the buttons above like 'Passwords' or 'WhatsApp'!",
+                    "I didn't quite catch that. Click a button above to get cybersecurity tips, or ask for a 'random tip'!"
                 };
                 return defaultResponses[random.Next(defaultResponses.Length)];
             }
 
-            // Add sentiment-based empathy - NO "click button" messages
+            // Add sentiment-based empathy
             if (sentiment == "worried")
             {
-                return $"It's understandable to be concerned. Let me help you stay safe. {baseResponse}\n\n💡 Ask 'tell me more' for additional tips!";
+                return $"It's understandable to be concerned. Let me help you stay safe. {baseResponse}\n\n💡 Click the same button again or ask 'tell me more' for additional tips!";
             }
             else if (sentiment == "frustrated")
             {
-                return $"Cybersecurity can seem complicated, but I'll make it simple. {baseResponse}\n\n💡 Ask 'tell me more' if you need more help!";
+                return $"Cybersecurity can seem complicated, but I'll make it simple. {baseResponse}\n\n💡 Need more help? Click the button again or ask 'tell me more'!";
             }
             else if (sentiment == "curious")
             {
-                return $"Great question! I love your curiosity about cybersecurity. {baseResponse}\n\n💡 Ask 'tell me more' for additional tips!";
+                return $"Great question! I love your curiosity about cybersecurity. {baseResponse}\n\n💡 Click the button again or ask 'tell me more' for additional tips!";
             }
 
-            return baseResponse + "\n\n💡 Ask 'tell me more' for additional tips!";
+            return baseResponse + "\n\n💡 Click the button again or ask 'tell me more' for additional tips!";
         }
 
         private void ProcessNameInput(string input)
@@ -442,7 +442,7 @@ namespace CybersecurityAwarenessBot_SA
                 {
                     userInterest = "privacy";
                     userMemory["interest"] = "privacy";
-                    OnResponseGenerated?.Invoke("Great! I'll remember you're interested in privacy. Here's a privacy tip for you!");
+                    OnResponseGenerated?.Invoke("Great! I'll remember you're interested in privacy. Click the Privacy button above for tips!");
                 }
                 else if (input.Contains("password"))
                 {
@@ -482,7 +482,8 @@ namespace CybersecurityAwarenessBot_SA
 💰 RANSOMWARE - Protection and backups
 🛒 SHOPPING - Safe online transactions
 
-💡 **TIP:** Ask 'tell me more' after any topic for additional information!";
+💡 **TIP:** Click any button above to learn about that topic!
+💡 **Want more?** After getting a tip, ask 'tell me more' for additional information!";
 
             OnResponseGenerated?.Invoke(menu);
         }
@@ -493,15 +494,15 @@ namespace CybersecurityAwarenessBot_SA
             {
                 return responses[key][random.Next(responses[key].Count)];
             }
-            return "I don't have info on that yet. Try asking about passwords, WhatsApp, or 2FA!";
+            return "Click any topic button above to learn about cybersecurity!";
         }
 
         private string GetGoodbyeMessage()
         {
             string[] goodbyes = {
-                $"Stay safe online{(!string.IsNullOrEmpty(userName) ? $", {userName}" : "")}! Enable 2FA, use strong passwords, and protect your WhatsApp! 🇿🇦",
-                "Thanks for learning about cybersecurity! Remember: Never share your WhatsApp verification code with anyone! 🛡️",
-                "Goodbye! Think before you click, enable 2FA, and stay safe online! 👋"
+                $"Stay safe online{(!string.IsNullOrEmpty(userName) ? $", {userName}" : "")}! Click the buttons anytime to learn more about cybersecurity! 🇿🇦",
+                "Thanks for learning! Remember to use strong passwords and enable 2FA. Click any button to continue learning! 🛡️",
+                "Goodbye! Stay safe online and come back anytime to learn more cybersecurity tips! 👋"
             };
             return goodbyes[random.Next(goodbyes.Length)];
         }
