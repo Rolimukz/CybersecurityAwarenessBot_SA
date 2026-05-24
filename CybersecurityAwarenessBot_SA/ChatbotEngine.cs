@@ -20,7 +20,7 @@ namespace CybersecurityAwarenessBot_SA
         private string userName = null;
         private string userInterest = null;
         private string lastTopic = null;
-        private string lastResponse = null;
+        private string currentTopic = null;  // NEW: Track current topic
         private int topicCount = 0;
 
         private string currentSentiment = "neutral";
@@ -71,16 +71,16 @@ namespace CybersecurityAwarenessBot_SA
             {
                 ["greeting"] = new List<string>
                 {
-                    "Hello! Click any topic button above to learn about cybersecurity!",
-                    "Hi there! Ready to learn? Just click a button above!",
-                    "Welcome! Choose a topic from the buttons above to get started!"
+                    "Hello! Click any button above to learn about cybersecurity!",
+                    "Hi there! Just click a button above to get started!",
+                    "Welcome! Choose a topic from the buttons above!"
                 },
 
                 ["name_response"] = new List<string>
                 {
-                    "Nice to meet you, {0}! 👋 Click any button above to learn about cybersecurity!",
-                    "Thanks, {0}! I'll remember your name. Click the buttons above to get started!",
-                    "Great to meet you, {0}! Click on Passwords, WhatsApp, or any topic button above!"
+                    "Nice to meet you, {0}! 👋 Click on any button above - Passwords, WhatsApp, 2FA, or others - to learn about cybersecurity!",
+                    "Thanks, {0}! I'll remember your name. Just click any topic button above to get started!",
+                    "Great to meet you, {0}! Tap on Passwords, WhatsApp, or any button above for cybersecurity tips!"
                 },
 
                 ["password"] = new List<string>
@@ -248,27 +248,27 @@ namespace CybersecurityAwarenessBot_SA
                 return;
             }
 
-            // Check for menu - but since you have buttons, this is optional
+            // Check for menu
             if (lowerInput == "menu" || lowerInput == "help" || lowerInput == "topics" || lowerInput == "what can you do")
             {
                 ShowMenu();
                 return;
             }
 
-            // Check for follow-up
+            // Check for follow-up - uses currentTopic instead of lastTopic
             if ((lowerInput.Contains("tell me more") || lowerInput.Contains("explain more") ||
                  lowerInput.Contains("another tip") || lowerInput.Contains("more details") ||
                  lowerInput == "tell more" || lowerInput == "more tips" || lowerInput == "more info"))
             {
-                if (!string.IsNullOrEmpty(lastTopic) && followUpResponses.ContainsKey(lastTopic))
+                if (!string.IsNullOrEmpty(currentTopic) && followUpResponses.ContainsKey(currentTopic))
                 {
-                    string followUp = followUpResponses[lastTopic][random.Next(followUpResponses[lastTopic].Count)];
+                    string followUp = followUpResponses[currentTopic][random.Next(followUpResponses[currentTopic].Count)];
                     OnResponseGenerated?.Invoke(followUp);
                     return;
                 }
                 else
                 {
-                    OnResponseGenerated?.Invoke("Click any topic button above (Passwords, WhatsApp, 2FA, etc.) then ask 'tell me more' for additional tips!");
+                    OnResponseGenerated?.Invoke("I'm not sure which topic you want more about. Try clicking a button above first (Passwords, WhatsApp, or Privacy) then ask 'tell me more'!");
                     return;
                 }
             }
@@ -281,20 +281,12 @@ namespace CybersecurityAwarenessBot_SA
                 return;
             }
 
-            // Detect user interest
-            DetectUserInterest(lowerInput);
-
-            // Get response based on keywords
+            // Get response based on keywords - this will update currentTopic
             string response = GetKeywordResponse(lowerInput, detectedSentiment);
 
             if (!string.IsNullOrEmpty(userName))
             {
                 response = response.Replace("{0}", userName);
-            }
-
-            if (!string.IsNullOrEmpty(userInterest) && !lowerInput.Contains("interest"))
-            {
-                response = $"[You're interested in {userInterest}] {response}";
             }
 
             OnResponseGenerated?.Invoke(response);
@@ -338,51 +330,78 @@ namespace CybersecurityAwarenessBot_SA
                 (input.Contains("enable") && input.Contains("whatsapp")) ||
                 (input.Contains("protect") && input.Contains("whatsapp")))
             {
+                currentTopic = "whatsapp";
                 lastTopic = "whatsapp";
                 baseResponse = GetRandomResponse("whatsapp");
+                // Update interest only if user expresses interest
+                if (string.IsNullOrEmpty(userInterest) && input.Contains("interest"))
+                {
+                    userInterest = "WhatsApp security";
+                    userMemory["interest"] = "WhatsApp security";
+                }
+            }
+            else if (input.Contains("privacy") || input.Contains("private") || input.Contains("data protection") || input.Contains("personal data"))
+            {
+                currentTopic = "privacy";
+                lastTopic = "privacy";
+                baseResponse = GetRandomResponse("privacy");
+                // Update interest only if user expresses interest
+                if (string.IsNullOrEmpty(userInterest) && input.Contains("interest"))
+                {
+                    userInterest = "privacy";
+                    userMemory["interest"] = "privacy";
+                }
             }
             else if (input.Contains("password") || input.Contains("pass") || input.Contains("login") || input.Contains("strong password"))
             {
+                currentTopic = "password";
                 lastTopic = "password";
                 baseResponse = GetRandomResponse("password");
+                if (string.IsNullOrEmpty(userInterest) && input.Contains("interest"))
+                {
+                    userInterest = "password security";
+                    userMemory["interest"] = "password security";
+                }
             }
             else if (input.Contains("phish") || input.Contains("scam") || input.Contains("fraud") || input.Contains("fake email") || input.Contains("phishing"))
             {
+                currentTopic = "phishing";
                 lastTopic = "phishing";
                 baseResponse = GetRandomResponse("phishing");
             }
             else if (input.Contains("2fa") || input.Contains("two factor") || input.Contains("authenticator") || input.Contains("two-factor") || input.Contains("multi factor"))
             {
+                currentTopic = "2fa";
                 lastTopic = "2fa";
                 baseResponse = GetRandomResponse("2fa");
             }
             else if (input.Contains("wifi") || input.Contains("wi-fi") || input.Contains("wireless") || input.Contains("public wifi") || input.Contains("vpn"))
             {
+                currentTopic = "wifi";
                 lastTopic = "wifi";
                 baseResponse = GetRandomResponse("wifi");
             }
             else if (input.Contains("sassa") || input.Contains("sa scam") || input.Contains("south african") || input.Contains("sabric") || input.Contains("saps"))
             {
+                currentTopic = "sascams";
                 lastTopic = "sascams";
                 baseResponse = GetRandomResponse("sascams");
             }
-            else if (input.Contains("privacy") || input.Contains("private") || input.Contains("data protection") || input.Contains("personal data"))
-            {
-                lastTopic = "privacy";
-                baseResponse = GetRandomResponse("privacy");
-            }
             else if (input.Contains("social") || input.Contains("facebook") || input.Contains("instagram") || input.Contains("twitter") || input.Contains("tiktok") || input.Contains("social media"))
             {
+                currentTopic = "socialmedia";
                 lastTopic = "socialmedia";
                 baseResponse = GetRandomResponse("socialmedia");
             }
             else if (input.Contains("ransom") || input.Contains("ransomware") || input.Contains("virus") || input.Contains("malware"))
             {
+                currentTopic = "ransomware";
                 lastTopic = "ransomware";
                 baseResponse = GetRandomResponse("ransomware");
             }
             else if (input.Contains("shop") || input.Contains("shopping") || input.Contains("buy") || input.Contains("online purchase") || input.Contains("payment"))
             {
+                currentTopic = "shopping";
                 lastTopic = "shopping";
                 baseResponse = GetRandomResponse("shopping");
             }
@@ -392,30 +411,30 @@ namespace CybersecurityAwarenessBot_SA
             }
             else
             {
-                // Default responses - no mention of typing menu since buttons exist
+                // Default responses - guide user to buttons
                 string[] defaultResponses = {
-                    "Click any topic button above - Passwords, WhatsApp, 2FA, or others - to learn about cybersecurity!",
-                    "Not sure what you mean. Try clicking one of the buttons above like 'Passwords' or 'WhatsApp'!",
-                    "I didn't quite catch that. Click a button above to get cybersecurity tips, or ask for a 'random tip'!"
+                    "I'm not sure what you're asking. Try clicking one of the buttons above - Passwords, WhatsApp, Privacy, or 2FA!",
+                    "Not sure what you mean. Click the Passwords, WhatsApp, Privacy, or 2FA button above to learn about cybersecurity!",
+                    "I didn't quite catch that. Click any button above to get cybersecurity tips, or ask for a 'random tip'!"
                 };
                 return defaultResponses[random.Next(defaultResponses.Length)];
             }
 
-            // Add sentiment-based empathy
+            // Add sentiment-based empathy (NO interest prefix anymore)
             if (sentiment == "worried")
             {
-                return $"It's understandable to be concerned. Let me help you stay safe. {baseResponse}\n\n💡 Click the same button again or ask 'tell me more' for additional tips!";
+                return $"It's understandable to be concerned. Let me help you stay safe. {baseResponse}\n\n💡 Ask 'tell me more' for additional tips!";
             }
             else if (sentiment == "frustrated")
             {
-                return $"Cybersecurity can seem complicated, but I'll make it simple. {baseResponse}\n\n💡 Need more help? Click the button again or ask 'tell me more'!";
+                return $"Cybersecurity can seem complicated, but I'll make it simple. {baseResponse}\n\n💡 Ask 'tell me more' if you need more help!";
             }
             else if (sentiment == "curious")
             {
-                return $"Great question! I love your curiosity about cybersecurity. {baseResponse}\n\n💡 Click the button again or ask 'tell me more' for additional tips!";
+                return $"Great question! I love your curiosity about cybersecurity. {baseResponse}\n\n💡 Ask 'tell me more' for additional tips!";
             }
 
-            return baseResponse + "\n\n💡 Click the button again or ask 'tell me more' for additional tips!";
+            return baseResponse + "\n\n💡 Ask 'tell me more' for additional tips!";
         }
 
         private void ProcessNameInput(string input)
@@ -434,56 +453,22 @@ namespace CybersecurityAwarenessBot_SA
             }
         }
 
-        private void DetectUserInterest(string input)
-        {
-            if (string.IsNullOrEmpty(userInterest))
-            {
-                if (input.Contains("privacy") || input.Contains("private"))
-                {
-                    userInterest = "privacy";
-                    userMemory["interest"] = "privacy";
-                    OnResponseGenerated?.Invoke("Great! I'll remember you're interested in privacy. Click the Privacy button above for tips!");
-                }
-                else if (input.Contains("password"))
-                {
-                    userInterest = "password security";
-                    userMemory["interest"] = "password security";
-                }
-                else if (input.Contains("scam") || input.Contains("phish"))
-                {
-                    userInterest = "scam prevention";
-                    userMemory["interest"] = "scam prevention";
-                }
-                else if (input.Contains("whatsapp"))
-                {
-                    userInterest = "WhatsApp security";
-                    userMemory["interest"] = "WhatsApp security";
-                }
-                else if (input.Contains("social") || input.Contains("facebook"))
-                {
-                    userInterest = "social media privacy";
-                    userMemory["interest"] = "social media privacy";
-                }
-            }
-        }
-
         private void ShowMenu()
         {
             string menu = @"📋 **AVAILABLE CYBERSECURITY TOPICS** 📋
 
-🔐 PASSWORDS - Strong password tips
-🎣 PHISHING - Recognize fake emails
-🔑 TWO-FACTOR AUTH - Extra security layer
-📱 WHATSAPP - Two-step verification setup
-📶 WI-FI SECURITY - Safe browsing habits
-🇿🇦 SA SCAMS - Local scam awareness
-🔒 PRIVACY - Data protection tips
-📱 SOCIAL MEDIA - Privacy settings
-💰 RANSOMWARE - Protection and backups
-🛒 SHOPPING - Safe online transactions
+🔐 PASSWORDS - Click the Passwords button above
+🎣 PHISHING - Click the Phishing button above
+🔑 TWO-FACTOR AUTH - Click the 2FA button above
+📱 WHATSAPP - Click the WhatsApp button above
+📶 WI-FI SECURITY - Click the Wi-Fi button above
+🇿🇦 SA SCAMS - Click the ZA SA Scams button above
+🔒 PRIVACY - Click the Privacy button above
+📱 SOCIAL MEDIA - Ask about 'social media'
+💰 RANSOMWARE - Ask about 'ransomware'
+🛒 SHOPPING - Ask about 'shopping'
 
-💡 **TIP:** Click any button above to learn about that topic!
-💡 **Want more?** After getting a tip, ask 'tell me more' for additional information!";
+💡 **TIP:** After clicking any button, ask 'tell me more' for additional information!";
 
             OnResponseGenerated?.Invoke(menu);
         }
@@ -494,7 +479,7 @@ namespace CybersecurityAwarenessBot_SA
             {
                 return responses[key][random.Next(responses[key].Count)];
             }
-            return "Click any topic button above to learn about cybersecurity!";
+            return "I don't have info on that yet. Try clicking one of the buttons above!";
         }
 
         private string GetGoodbyeMessage()
