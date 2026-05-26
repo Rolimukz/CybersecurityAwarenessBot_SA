@@ -61,14 +61,15 @@ Bot says it understands my concern and gives me tips about fake SASSA messages
 I type: exit
 Bot says goodbye and closes
 
+
 ## File Structure
 
 CybersecurityAwarenessBot_SA/
- -MainWindow.xaml # The design and layout
- -MainWindow.xaml.cs # Handles buttons and messages
- -ChatbotEngine.cs # The bot brain
- -Recording005.wav # My voice greeting
- -README.md # This file
+├── MainWindow.xaml              # User interface design
+├── MainWindow.xaml.cs           # Button clicks and message display
+├── ChatbotEngine.cs             # Bot responses and memory
+├── Recording005.wav             # Your voice greeting
+└── README.md                    # This file
 
 
 ## Video Presentation
