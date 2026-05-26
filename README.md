@@ -64,11 +64,11 @@ Bot says goodbye and closes
 ## File Structure
 
 CybersecurityAwarenessBot_SA/
-├── MainWindow.xaml # The design and layout
-├── MainWindow.xaml.cs # Handles buttons and messages
-├── ChatbotEngine.cs # The bot brain
-├── Recording005.wav # My voice greeting
-└── README.md # This file
+ -MainWindow.xaml # The design and layout
+ -MainWindow.xaml.cs # Handles buttons and messages
+ -ChatbotEngine.cs # The bot brain
+ -Recording005.wav # My voice greeting
+ -README.md # This file
 
 
 ## Video Presentation
