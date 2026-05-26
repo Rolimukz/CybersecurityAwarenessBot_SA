@@ -62,3 +62,30 @@ I type: exit
 Bot says goodbye and closes
 
 ## File Structure
+
+CybersecurityAwarenessBot_SA/
+├── MainWindow.xaml # The design and layout
+├── MainWindow.xaml.cs # Handles buttons and messages
+├── ChatbotEngine.cs # The bot brain
+├── Recording005.wav # My voice greeting
+└── README.md # This file
+
+
+## Video Presentation
+
+YouTube link: https://youtu.be/NcZlZTCtRzc
+
+## GitHub Repository
+
+Repository link: https://github.com/Rolimukz/CybersecurityAwarenessBot_SA.git
+
+## Author
+
+Name: Mukwevho Makwarela Rolivhuwa
+Course: Cybersecurity Awareness - Part 2
+Date:26 May 2026
+
+---
+
+Stay safe online, South Africa.
+
