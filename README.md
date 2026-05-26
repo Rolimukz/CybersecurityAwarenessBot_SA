@@ -25,7 +25,7 @@ I used C# with WPF for the user interface. There are three main files:
 
 ## How to Run It
 
-You need Visual Studio 2022 and .NET 8.0.
+You need Visual Studio 2026 
 
 1. Open the project in Visual Studio
 2. Put your voice file (Recording005.wav) in the project folder if you want the greeting to play
